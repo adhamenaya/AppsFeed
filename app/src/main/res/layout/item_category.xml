@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingTop="23dp"
+    android:paddingBottom="23dp">
+
+        <ImageView
+            android:id="@+id/image_view_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_alignParentLeft="false"
+            android:layout_marginRight="10dp"   />
+
+        <TextView
+            android:id="@+id/text_view_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/image_view_icon"
+            android:textSize="@dimen/text_headline" android:textColor="@color/accent"
+            android:layout_marginLeft="15dp"
+            tools:text="Antony Ribot" />
+
+    </RelativeLayout>
