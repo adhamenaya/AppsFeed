@@ -59,18 +59,50 @@ public class Db {
 
         public static AppCategory parseCursor1(Cursor cursor) {
             AppCategory appCategory = new AppCategory();
-            appCategory.mAppId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID));
-            appCategory.mCategoryId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_CATEGORY_ID));
+            appCategory.mAppId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_CATE_APP_ID));
+            appCategory.mCategoryId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_CATE_CATE_ID));
 
             return appCategory;
         }
+    }
 
+    public abstract static class ImageTable{
+        public static final String TABLE_NAME = "grability_app_image";
+
+        // Table of application images
+        public static final String COLUMN_IMAGE_APP_ID = "id";
+        public static final String COLUMN_IMAGE_PATH = "name";
+        public static final String COLUMN_IMAGE_HEIGHT = "height";
+
+        public static final String CREATE =
+                "CREATE TABLE " + TABLE_NAME + " (" +
+                        COLUMN_IMAGE_APP_ID + " LONG NOT NULL, " +
+                        COLUMN_IMAGE_PATH + " TEXT NOT NULL, " +
+                        COLUMN_IMAGE_HEIGHT + " LONG NOT NULL" +
+                        " ); ";
+
+        public static ContentValues toContentValues(Image image) {
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_IMAGE_APP_ID, image.appId);
+            values.put(COLUMN_IMAGE_PATH, image.label);
+            values.put(COLUMN_IMAGE_HEIGHT, image.imageAttributes.height);
+
+            return values;
+        }
+
+        public static Image parseCursor(Cursor cursor) {
+            Image image = new Image();
+
+            image.appId = String.valueOf(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_APP_ID)));
+            image.label = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_PATH));
+            image.imageAttributes.height = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_IMAGE_HEIGHT));
+
+            return image;
+        }
     }
 
     public abstract static class ApplicationTable {
         public static final String TABLE_NAME = "grability_app";
-
-        public static final String TABLE_IMAGE = "grability_app_image";
 
         // Table of applications
         public static final String COLUMN_ID = "id";
@@ -78,12 +110,6 @@ public class Db {
         public static final String COLUMN_SUMMARY = "summary";
         public static final String COLUMN_PRICE = "price";
         public static final String COLUMN_CURRENCY = "currency";
-
-        // Table of application images
-        public static final String COLUMN_IMAGE_APP_ID = "id";
-        public static final String COLUMN_IMAGE_PATH = "name";
-        public static final String COLUMN_IMAGE_HEIGHT = "height";
-
 
         public static final String CREATE =
                 "CREATE TABLE " + TABLE_NAME + " (" +
@@ -93,13 +119,6 @@ public class Db {
                         COLUMN_PRICE + " LONG NOT NULL, " +
                         COLUMN_CURRENCY + " TEXT NOT NULL " +
                 " ); ";
-
-        public static final String CREATE4 =
-                "CREATE TABLE " + TABLE_IMAGE + " (" +
-                        COLUMN_IMAGE_APP_ID + " LONG NOT NULL, " +
-                        COLUMN_IMAGE_PATH + " TEXT NOT NULL, " +
-                        COLUMN_IMAGE_HEIGHT + " LONG NOT NULL" +
-                        " ); ";
 
         public static ContentValues toContentValues(Application application) {
             ContentValues values = new ContentValues();

@@ -50,8 +50,8 @@ public class DataManager {
                 });
     }
 
-    public Observable<List<Application>> getApplications(String categoryId) {
-        return mDatabaseHelper.getApplications(categoryId).distinct();
+    public Observable<List<Application>> getApplications(String categoryId,int applicationId) {
+        return mDatabaseHelper.getApplications(categoryId,applicationId).distinct();
     }
 
     public Observable<List<Category>> getCategories(){

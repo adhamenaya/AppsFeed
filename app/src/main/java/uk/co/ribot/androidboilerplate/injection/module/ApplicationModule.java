@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 
 import com.squareup.otto.Bus;
+import com.squareup.picasso.OkHttpDownloader;
+import com.squareup.picasso.Picasso;
 
 import javax.inject.Singleton;
 
@@ -46,4 +48,14 @@ public class ApplicationModule {
         return RssService.Creator.newRssService();
     }
 
+
+    @Provides
+    @Singleton
+    Picasso providePicasso(@ApplicationContext Context context){
+        return new Picasso.Builder(context)
+                .downloader(new OkHttpDownloader(context,Integer.MAX_VALUE))
+               // .indicatorsEnabled(true)
+               // .loggingEnabled(true)
+                .build();
+    }
 }

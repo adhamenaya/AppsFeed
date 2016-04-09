@@ -1,11 +1,18 @@
 package uk.co.ribot.androidboilerplate.ui.main;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +23,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import uk.co.ribot.androidboilerplate.R;
 import uk.co.ribot.androidboilerplate.data.model.Application;
+import uk.co.ribot.androidboilerplate.util.OnItemClickListener;
 
 
 public class ApplicationsAdapter extends RecyclerView.Adapter<ApplicationsAdapter.ApplicationViewHolder> {
@@ -23,11 +31,18 @@ public class ApplicationsAdapter extends RecyclerView.Adapter<ApplicationsAdapte
     private List<Application> mApplications;
 
     @Inject
+    Picasso picasso;
+
+    public OnItemClickListener onItemClickListener;
+
+    @Inject
     public ApplicationsAdapter() {
         mApplications = new ArrayList<>();
     }
 
-    public void setApplications(List<Application> Applications) {
+    public void setApplications(Context context,List<Application> Applications) {
+
+        this.onItemClickListener = (OnItemClickListener) context;
         mApplications = Applications;
     }
 
@@ -39,12 +54,9 @@ public class ApplicationsAdapter extends RecyclerView.Adapter<ApplicationsAdapte
     }
 
     @Override
-    public void onBindViewHolder(ApplicationViewHolder holder, int position) {
+    public void onBindViewHolder(final ApplicationViewHolder holder, int position) {
         Application application = mApplications.get(position);
-       // holder.hexColorView.setBackgroundColor(Color.parseColor(application.name.label));
-      //  holder.nameTextView.setText(String.format("%s %s",
-       //         Application.profile.name.first, Application.profile.name.last));
-        holder.emailTextView.setText(application.name.label);
+        holder.bind(application);
     }
 
     @Override
@@ -54,13 +66,47 @@ public class ApplicationsAdapter extends RecyclerView.Adapter<ApplicationsAdapte
 
     class ApplicationViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.view_hex_color) View hexColorView;
-        @Bind(R.id.text_name) TextView nameTextView;
-        @Bind(R.id.text_email) TextView emailTextView;
+        @Bind(R.id.image_view_application)
+        ImageView imageViewApplication;
+
+        @Bind(R.id.text_view_name) TextView textViewName;
+        @Bind(R.id.text_view_price) TextView textViewPrice;
 
         public ApplicationViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+        }
+
+        public void bind(final Application application) {
+
+            textViewName.setText(application.name.label);
+            textViewPrice.setText(application.price.attributes.amount + " " + application.price.attributes.currency);
+            if(picasso !=null
+                    && application.images.size()>0
+                    && !application.images.get(0).label.isEmpty()){
+
+                final String imagePath = application.images.get(0).label;
+
+                picasso.load(imagePath)
+                        .networkPolicy(NetworkPolicy.OFFLINE)
+                        .into(imageViewApplication, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                            }
+                            @Override
+                            public void onError() {
+                                // Try to get image online
+                                picasso.load(imagePath).into(imageViewApplication);
+                            }
+                        });
+            }
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    onItemClickListener.onItemClick(application, getAdapterPosition());
+                }
+            });
         }
     }
 }

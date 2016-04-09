@@ -3,6 +3,7 @@ package uk.co.ribot.androidboilerplate.data.model;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by adhamenaya on 4/7/2016.
@@ -12,9 +13,15 @@ public class Application {
     public static class Name{
         public String label;
     }
-    public static class Image{
-        public String label;
+
+    public static class ImageAttributes{
         public int height;
+    }
+    public static class Image{
+        public String appId;
+        public String label;
+        @SerializedName("attributes")
+        public ImageAttributes imageAttributes = new ImageAttributes();
     }
     public static class Summary{
         public String label;
@@ -46,7 +53,7 @@ public class Application {
     public Name name = new Name();
 
     @SerializedName("im:image")
-    public ArrayList<Image> images;
+    public List<Image> images = new ArrayList<Image>();
 
     @SerializedName("summary")
     public Summary summary = new Summary();

@@ -23,11 +23,12 @@ import uk.co.ribot.androidboilerplate.R;
 import uk.co.ribot.androidboilerplate.data.model.Application;
 import uk.co.ribot.androidboilerplate.data.model.Category;
 import uk.co.ribot.androidboilerplate.util.CommonUtils;
+import uk.co.ribot.androidboilerplate.util.OnItemClickListener;
 
 /**
  * Created by adhamenaya on 4/8/2016.
  */
-public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>{
+public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
 
     private List<Category> mCategories;
     private OnItemClickListener onItemClickListener;
@@ -38,8 +39,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         mCategories = new ArrayList<>();
     }
 
-    public void setOnItemClickListener(Context context){
-        this.onItemClickListener = (OnItemClickListener)context;
+    public void setOnItemClickListener(Context context) {
+        this.onItemClickListener = (OnItemClickListener) context;
         this.context = context;
     }
 
@@ -78,13 +79,15 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             ButterKnife.bind(this, itemView);
         }
 
-        public void bind(final Category category){
+        public void bind(final Category category) {
 
             String iconName = category.attributes.label.toLowerCase().split(" ")[0];
 
             textViewName.setText(category.attributes.label);
 
-            imageViewIcon.setImageDrawable(context.getResources().getDrawable(CommonUtils.getIconId(context, iconName)));
+            int id = CommonUtils.getIconId(context, iconName);
+            if (id > 0)
+                imageViewIcon.setImageDrawable(context.getResources().getDrawable(id));
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -93,12 +96,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                 }
             });
 
-            itemView.setBackgroundColor(Color.parseColor(CommonUtils.getBackgroundColor(context,getAdapterPosition())));
+            itemView.setBackgroundColor(Color.parseColor(CommonUtils.getBackgroundColor(context, getAdapterPosition())));
         }
     }
-
-    public interface OnItemClickListener{
-        public void onItemClick(Category category, int position);
-    }
-
 }

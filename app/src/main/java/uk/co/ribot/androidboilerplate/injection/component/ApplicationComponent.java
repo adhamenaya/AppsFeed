@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.squareup.otto.Bus;
+import com.squareup.picasso.Picasso;
 
 import javax.inject.Singleton;
 
@@ -29,5 +30,6 @@ public interface ApplicationComponent {
     DatabaseHelper databaseHelper();
     DataManager dataManager();
     Bus eventBus();
+    Picasso picasso();
 
 }

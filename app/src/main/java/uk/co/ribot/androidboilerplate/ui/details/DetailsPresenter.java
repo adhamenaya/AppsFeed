@@ -1,4 +1,4 @@
-package uk.co.ribot.androidboilerplate.ui.main;
+package uk.co.ribot.androidboilerplate.ui.details;
 
 import java.util.List;
 
@@ -12,19 +12,23 @@ import timber.log.Timber;
 import uk.co.ribot.androidboilerplate.data.DataManager;
 import uk.co.ribot.androidboilerplate.data.model.Application;
 import uk.co.ribot.androidboilerplate.ui.base.BasePresenter;
+import uk.co.ribot.androidboilerplate.ui.main.MainMvpView;
 
-public class MainPresenter extends BasePresenter<MainMvpView> {
+/**
+ * Created by adhamenaya on 4/9/2016.
+ */
+public class DetailsPresenter extends BasePresenter<DetailsMvpView> {
 
     private final DataManager mDataManager;
     private Subscription mSubscription;
 
     @Inject
-    public MainPresenter(DataManager dataManager) {
+    public DetailsPresenter(DataManager dataManager) {
         mDataManager = dataManager;
     }
 
     @Override
-    public void attachView(MainMvpView mvpView) {
+    public void attachView(DetailsMvpView mvpView) {
         super.attachView(mvpView);
     }
 
@@ -34,9 +38,9 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
         if (mSubscription != null) mSubscription.unsubscribe();
     }
 
-    public void loadApplications(String categoryId) {
+    public void loadApplication(String categoryId,int applicationId) {
         checkViewAttached();
-        mSubscription = mDataManager.getApplications(categoryId,-1)
+        mSubscription = mDataManager.getApplications(categoryId,applicationId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<List<Application>>() {
@@ -46,17 +50,12 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
 
                     @Override
                     public void onError(Throwable e) {
-                        Timber.e(e, "There was an error loading the applications.");
-                        getMvpView().showError();
                     }
 
                     @Override
                     public void onNext(List<Application> applications) {
-                        if (applications.isEmpty()) {
-                            getMvpView().showApplicationsEmpty();
-                        } else {
-                            getMvpView().showApplications(applications);
-                        }
+                       if(applications!=null && applications.size()>0)
+                        getMvpView().showDetails(applications.get(0));
                     }
                 });
     }

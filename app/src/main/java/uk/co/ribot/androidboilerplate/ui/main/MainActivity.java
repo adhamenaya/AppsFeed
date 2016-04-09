@@ -19,15 +19,21 @@ import butterknife.ButterKnife;
 import uk.co.ribot.androidboilerplate.R;
 import uk.co.ribot.androidboilerplate.data.SyncService;
 import uk.co.ribot.androidboilerplate.data.model.Application;
+import uk.co.ribot.androidboilerplate.data.model.Category;
 import uk.co.ribot.androidboilerplate.ui.base.BaseActivity;
 import uk.co.ribot.androidboilerplate.ui.category.CategoryActivity;
+import uk.co.ribot.androidboilerplate.ui.category.CategoryAdapter;
+import uk.co.ribot.androidboilerplate.ui.details.DetailsActivity;
 import uk.co.ribot.androidboilerplate.util.CommonUtils;
 import uk.co.ribot.androidboilerplate.util.DialogFactory;
+import uk.co.ribot.androidboilerplate.util.OnItemClickListener;
 
-public class MainActivity extends BaseActivity implements MainMvpView {
+public class MainActivity extends BaseActivity implements MainMvpView, OnItemClickListener {
 
     private static final String EXTRA_TRIGGER_SYNC_FLAG =
             "uk.co.ribot.androidboilerplate.ui.main.MainActivity.EXTRA_TRIGGER_SYNC_FLAG";
+
+    public static final String APPLICATION_ID = "application_id";
 
     @Inject MainPresenter mMainPresenter;
     @Inject
@@ -37,6 +43,9 @@ public class MainActivity extends BaseActivity implements MainMvpView {
 
     @Bind(R.id.relative_layout_main)
     RelativeLayout mRelativeLayout;
+
+    int categoryPosition = 0;
+
     /**
      * Return an Intent to start this Activity.
      * triggerDataSyncOnCreate allows disabling the background sync service onCreate. Should
@@ -60,7 +69,7 @@ public class MainActivity extends BaseActivity implements MainMvpView {
         mMainPresenter.attachView(this);
 
         String categoryId = getIntent().getExtras().getString(CategoryActivity.CATEGORY_ID);
-        int categoryPosition = getIntent().getExtras().getInt(CategoryActivity.CATEGORY_POSITION);
+        categoryPosition = getIntent().getExtras().getInt(CategoryActivity.CATEGORY_POSITION);
 
         mRelativeLayout.setBackgroundColor(
                 Color.parseColor(CommonUtils.getBackgroundColor(getApplicationContext(),categoryPosition)));
@@ -83,7 +92,7 @@ public class MainActivity extends BaseActivity implements MainMvpView {
 
     @Override
     public void showApplications(List<Application> applications) {
-        mApplicationsAdapter.setApplications(applications);
+        mApplicationsAdapter.setApplications(this,applications);
         mApplicationsAdapter.notifyDataSetChanged();
     }
 
@@ -95,8 +104,17 @@ public class MainActivity extends BaseActivity implements MainMvpView {
 
     @Override
     public void showApplicationsEmpty() {
-        mApplicationsAdapter.setApplications(Collections.<Application>emptyList());
+        mApplicationsAdapter.setApplications(this,Collections.<Application>emptyList());
         mApplicationsAdapter.notifyDataSetChanged();
         Toast.makeText(this, R.string.empty_applications, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onItemClick(Object object, int position) {
+        Application application = (Application) object;
+        Intent intent = DetailsActivity.getStartIntent(getApplicationContext());
+        intent.putExtra(CategoryActivity.CATEGORY_POSITION,categoryPosition);
+        intent.putExtra(APPLICATION_ID, Integer.parseInt(application.id.idAttributes.id));
+        startActivity(intent);
     }
 }

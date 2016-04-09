@@ -27,8 +27,9 @@ import uk.co.ribot.androidboilerplate.ui.base.BaseActivity;
 import uk.co.ribot.androidboilerplate.ui.main.ApplicationsAdapter;
 import uk.co.ribot.androidboilerplate.ui.main.MainActivity;
 import uk.co.ribot.androidboilerplate.ui.main.MainMvpView;
+import uk.co.ribot.androidboilerplate.util.OnItemClickListener;
 
-public class CategoryActivity extends BaseActivity implements CategoryMvpView, CategoryAdapter.OnItemClickListener {
+public class CategoryActivity extends BaseActivity implements CategoryMvpView, OnItemClickListener {
 
 
     @Inject CategoryPresenter mCategoryPresenter;
@@ -82,10 +83,9 @@ public class CategoryActivity extends BaseActivity implements CategoryMvpView, C
     }
 
     @Override
-    public void onItemClick(Category category, int position) {
-
+    public void onItemClick(Object object, int position) {
         Intent intent = MainActivity.getStartIntent(getApplicationContext(),false);
-        intent.putExtra(CATEGORY_ID,category.attributes.id);
+        intent.putExtra(CATEGORY_ID,((Category)object).attributes.id);
         intent.putExtra(CATEGORY_POSITION,position);
 
         startActivity(intent);

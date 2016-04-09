@@ -4,6 +4,7 @@ import dagger.Component;
 import uk.co.ribot.androidboilerplate.injection.PerActivity;
 import uk.co.ribot.androidboilerplate.injection.module.ActivityModule;
 import uk.co.ribot.androidboilerplate.ui.category.CategoryActivity;
+import uk.co.ribot.androidboilerplate.ui.details.DetailsActivity;
 import uk.co.ribot.androidboilerplate.ui.main.MainActivity;
 
 /**
@@ -16,5 +17,7 @@ public interface ActivityComponent {
     void inject(MainActivity mainActivity);
 
     void inject(CategoryActivity categoryActivity);
+
+    void inject(DetailsActivity detailsActivity);
 
 }

@@ -2,11 +2,13 @@ package uk.co.ribot.androidboilerplate.data.local;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.squareup.sqlbrite.BriteDatabase;
 import com.squareup.sqlbrite.SqlBrite;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Timer;
@@ -16,14 +18,10 @@ import javax.inject.Singleton;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.functions.Func1;
-import timber.log.Timber;
 import uk.co.ribot.androidboilerplate.data.model.AppCategory;
 import uk.co.ribot.androidboilerplate.data.model.Application;
 import uk.co.ribot.androidboilerplate.data.model.Category;
-import uk.co.ribot.androidboilerplate.data.model.RssFeed;
 
 @Singleton
 public class DatabaseHelper {
@@ -76,8 +74,11 @@ public class DatabaseHelper {
                                 Db.ApplicationTable.toContentValues(application), SQLiteDatabase.CONFLICT_REPLACE);
 
                         if (result >= 0){
-                            //Save the category in database
+                            // Save the category in database
                             setCategories(application.category, application);
+
+                            // Save images of application
+                            setImages(application.images,application);
 
                             subscriber.onNext(application);
                         }
@@ -91,17 +92,28 @@ public class DatabaseHelper {
         });
     }
 
-    public Observable<List<Application>> getApplications(String categoryId) {
+    public Observable<List<Application>> getApplications(String categoryId, int applicationId) {
+         String where = "";
+        String args[];
+        if(applicationId == -1){
+            args = new String[]{categoryId};
+            where = "  WHERE " + Db.CategoryTable.COLUMN_CATE_CATE_ID + " = ? )";
+        }else {
+            args = new String[]{String.valueOf(applicationId)};
+            where = "  WHERE " + Db.ApplicationTable.COLUMN_ID+" = ? )";
+        }
 
+        Log.d("where",where +" "+ applicationId);
         return mDb.createQuery(Db.ApplicationTable.TABLE_NAME,
                 "SELECT * FROM " + Db.ApplicationTable.TABLE_NAME +
                         " WHERE " + Db.ApplicationTable.COLUMN_ID + " in" +
-                        " (SELECT " + Db.CategoryTable.COLUMN_CATE_APP_ID + " FROM " + Db.CategoryTable.TABLE_CATE_APP +
-                        "  WHERE " + Db.CategoryTable.COLUMN_CATE_CATE_ID + " = ? )", new String[]{categoryId})
+                        " (SELECT " + Db.CategoryTable.COLUMN_CATE_APP_ID + " FROM " + Db.CategoryTable.TABLE_CATE_APP + where, args)
                 .mapToList(new Func1<Cursor, Application>() {
                     @Override
                     public Application call(Cursor cursor) {
-                        return Db.ApplicationTable.parseCursor(cursor);
+                        Application application = Db.ApplicationTable.parseCursor(cursor);
+                        application.images = getImage(application);
+                        return application;
                     }
                 });
     }
@@ -110,7 +122,6 @@ public class DatabaseHelper {
        // Check the category is already inserted or not!
                 Cursor cursor = mDb.query("SELECT * FROM "+Db.CategoryTable.TABLE_NAME + " WHERE "+Db.CategoryTable.COLUMN_CATEGORY_ID + " = ?",
                         new String[] {String.valueOf(newCategory.attributes.id)});
-                Log.d("** cate",newCategory.attributes.label);
 
                 // Check the result of selection
                 if(cursor == null || cursor.getCount() == 0){
@@ -126,7 +137,13 @@ public class DatabaseHelper {
 
         mDb.insert(Db.CategoryTable.TABLE_CATE_APP, Db.CategoryTable.toContentValues(appCategory));
 
+    }
 
+    public void setImages(List<Application.Image> images,Application application){
+        for(Application.Image image : images){
+            image.appId = application.id.idAttributes.id;
+            mDb.insert(Db.ImageTable.TABLE_NAME,Db.ImageTable.toContentValues(image));
+        }
     }
 
     public Observable<List<Category>> getCategories(){
@@ -137,5 +154,20 @@ public class DatabaseHelper {
                 return Db.CategoryTable.parseCursor0(cursor);
             }
         });
+    }
+
+    public List<Application.Image> getImage(Application application){
+
+        ArrayList<Application.Image> images= new ArrayList<Application.Image>();
+
+        Cursor cursor = mDb.query("SELECT * FROM " + Db.ImageTable.TABLE_NAME
+                        + " WHERE " + Db.ImageTable.COLUMN_IMAGE_APP_ID + " = ? "
+                        ,new String[]{String.valueOf(application.id.idAttributes.id)});
+
+        cursor.moveToFirst();
+        while (cursor.moveToNext()){
+            images.add(Db.ImageTable.parseCursor(cursor));
+        }
+        return images;
     }
 }
