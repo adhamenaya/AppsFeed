@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:paddingTop="18dp"
+    android:paddingBottom="18dp">
+
+        <ImageView
+            android:id="@+id/image_view_application"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:transitionName="@string/animate_icon"/>
+
+        <TextView
+            android:id="@+id/text_view_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/image_view_application"
+            android:layout_alignTop="@+id/image_view_application"
+            android:textSize="@dimen/text_headline"
+            android:ellipsize="marquee"
+            android:singleLine="true"
+            android:textColor="@color/accent"
+            android:layout_marginLeft="18dp"
+            tools:text="" />
+
+        <TextView
+            android:id="@+id/text_view_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/text_view_name"
+            android:textColor="@color/accent"
+            android:layout_toRightOf="@id/image_view_application"
+            android:layout_alignBottom="@+id/image_view_application"
+            android:textSize="@dimen/text_small_body"
+            tools:text=""
+            android:layout_marginLeft="18dp"
+            />
+
+    </RelativeLayout>
